@@ -27,7 +27,7 @@ if action == 'guardar':
 		if not chunk:
 			break
 
-		filename = filepath # TODO
+		filename = filepath
 		filename = filename + ".part_" + str(part)
 
 		proxy.send_multipart([b"guardar", filepath.encode(), filename.encode(), str(ps).encode()])
@@ -45,24 +45,36 @@ if action == 'guardar':
 	file.close()
 
 elif action == 'obtener':
+
 	filename = sys.argv[2]
-	proxy.send_multipart([b"listar", filename.encode()])
+	proxy.send_multipart([b"obtener", filename.encode()])
 
 	partsFiles = proxy.recv_multipart()
+	print([part.decode() for part in partsFiles], flush = True)
 
-	file = open("folder/" + filename, 'wb')
+	file = open("downloads/" + filename, 'wb')
+
 	for part in partsFiles:
-		path, server = part.split(";")
+
+		path, server = part.decode().split(";")
+
 		socket = context.socket(zmq.REQ)
 		socket.connect("tcp://" + server)
-		socket.send_multipart(["obtener", path])
+		socket.send_multipart([b"obtener", path.encode()])
+
 		content = socket.recv_multipart()
-		file.write(content)
+		file.write(content[0])
+
 	file.close()
 
 elif action == 'listar':
+
 	proxy.send_multipart([b"listar"])
+
 	listFiles = proxy.recv_multipart()
+
 	print([file.decode() for file in listFiles])
+
 else:
+
 	print("error")

@@ -1,6 +1,5 @@
 # python proxy.py
 
-
 import zmq
 
 context = zmq.Context()
@@ -40,7 +39,7 @@ while True:
 		filename = filename.decode()
 		if filename not in registry:
 			registry[filename] = list()
-		registry[filename].append([part + b";" + servers[iterator]])
+		registry[filename].append(part + b";" + servers[iterator])
 
 		available[iterator] -= int(weight.decode())
 
@@ -52,7 +51,7 @@ while True:
 
 		filename = message[1]
 
-		socket.send_multipart([data.encode() for data in registry[filename]])
+		socket.send_multipart([data for data in registry[filename.decode()]])
 
 	elif action == 'listar':
 

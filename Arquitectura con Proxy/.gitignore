@@ -1,0 +1,6 @@
+*
+!.gitignore
+!client.py
+!proxy.py
+!server.py
+!downloads

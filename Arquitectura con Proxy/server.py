@@ -1,12 +1,11 @@
-# python server.py localhost 5551 1000
 # python server.py {ip} {port} {capacity}
+# python server.py localhost 5551 1000
 
 import os
 import sys
 import zmq
 
 ip, port, capacity = (sys.argv[1], sys.argv[2], sys.argv[3])
-
 
 context = zmq.Context()
 
