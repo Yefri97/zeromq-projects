@@ -1,14 +1,20 @@
 import zmq
 import sys
 
-ip, port = (sys.argv[1], sys.argv[2])
+address = sys.argv[1]
 
 context = zmq.Context()
 
 socket = context.socket(zmq.REQ)
-socket.connect("tcp://{}:{}".format(ip, port))
+socket.connect("tcp://{}".format(address))
 
-socket.send(b"get")
-idr = socket.recv()
+def encode(l):
+	return [x.encode() for x in l]
 
-print(idr)
+def decode(l):
+	return [x.decode() for x in l]
+
+socket.send_multipart(encode(["info"]))
+info = decode(socket.recv_multipart())
+
+print(info)
