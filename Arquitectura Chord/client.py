@@ -25,17 +25,18 @@ def hash(filename):
 	return sha1.hexdigest()
 
 def new_txt(nombre):
+	nombre_txt = hash(nombre)[:8]
 	file = open(nombre, 'rb')
-	file_txt = open(nombre + ".txt", "w")
+	file_txt = open(nombre_txt + ".txt", "w")
 	while True:
 		chunk = file.read(ps)
 		if not chunk:
 			break
-		chunk_hash = hashlib.sha1(chunk)
-		file_txt.write(chunk_hash + os.linesep)
+		chunk_hash = hashlib.sha1(chunk).hexdigest()
+		file_txt.write(str(reduce(chunk_hash)) + '\n')
 	file.close()
 	file_txt.close()
-	return hash(nombre)
+	return nombre_txt
 
 def get_info_serve(address):
 	context = zmq.Context()
@@ -56,7 +57,7 @@ def get_responsable(idr, ring_address):
 		ring_address = info_prev[1]
 
 def reduce(big_number):
-	return int(big_number) % max_number
+	return int(big_number, 16) % max_number
 
 ring_address, action = (sys.argv[1], sys.argv[2])
 
@@ -76,13 +77,14 @@ if action == 'upload':
 			break
 
 		# Obtiene al responsable
-		chunk_hash = hashlib.sha1(chunk)
+		chunk_hash = hashlib.sha1(chunk).hexdigest()
 		responsable = get_responsable(reduce(chunk_hash), ring_address)
 
 		# Le envia el chunk al responsable
+		context = zmq.Context()
 		socket = context.socket(zmq.REQ)
 		socket.connect("tcp://" + responsable[1])
-		socket.send_multipart([b'upload', chunk])
+		socket.send_multipart([b'upload', str(reduce(chunk_hash)).encode(), chunk])
 
 	file.close()
 
