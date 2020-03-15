@@ -28,6 +28,7 @@ def new_txt(nombre):
 	nombre_txt = hash(nombre)[:8]
 	file = open(nombre, 'rb')
 	file_txt = open(nombre_txt + ".txt", "w")
+	file_txt.write(nombre + '\n')
 	while True:
 		chunk = file.read(ps)
 		if not chunk:
@@ -90,7 +91,31 @@ if action == 'upload':
 
 elif action == 'download':
 
-	filename = sys.argv[3] # Path from the .txt
+	nametxt = sys.argv[3] # Path from the .txt
+	#file_txt = new_txt(file2upload)
+	#print("Totient generado en " + file_txt)
+	print("Iniciando descarga...")
+	file_txt = open(nametxt, "r")
+
+	filename = file_txt.readline().strip()
+	
+	file = open("downloads/" + filename, 'wb')
+
+	chunk_hash = file_txt.readline().strip()
+	while chunk_hash:
+		responsable = get_responsable(int(chunk_hash), ring_address)
+
+		context = zmq.Context()
+		socket = context.socket(zmq.REQ)
+		socket.connect("tcp://" + responsable[1])
+		socket.send_multipart(encode(["download", chunk_hash]))
+
+		content = socket.recv_multipart()
+		file.write(content[0])
+		chunk_hash = file_txt.readline().strip()
+
+	file_txt.close()
+	file.close()
 
 else:
 	print("error")
