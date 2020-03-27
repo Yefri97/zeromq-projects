@@ -6,7 +6,7 @@ import zmq
 import math
 from random import random
 
-max_number = 10000000
+max_number = 1000000000
 
 # info_server = (id, address, prev_address)
 # id = [1..max_number]
@@ -39,11 +39,11 @@ def get_responsable(idr, ring_address):
 			return info_current
 		ring_address = info_prev[1]
 
-def update_prev(address, new_prev_address):
+def update_prev(address, new_prev_address, delete_prev):
 	context = zmq.Context()
 	socket = context.socket(zmq.REQ)
 	socket.connect("tcp://{}".format(address))
-	socket.send_multipart(encode(["update", new_prev_address]))
+	socket.send_multipart(encode(["update", new_prev_address, str(delete_prev)]))
 	message = decode(socket.recv_multipart())
 	print(message[0], flush = True)
 
@@ -95,7 +95,7 @@ else:
 		if my_range[0] <= int(chunk_hash) and int(chunk_hash) <= my_range[1]:
 			get_hash(folder, chunk_hash, responsable[1])
 
-	update_prev(responsable[1], my_address)
+	update_prev(responsable[1], my_address, idr)
 
 print("El id asignado a este este servidor es: {}".format(idr), flush = True)
 print("Y la direccion de su anterior es: {}".format(prev), flush = True)
@@ -120,7 +120,18 @@ while True:
 	elif action == 'update':
 
 		new_prev_address = message[1].decode()
+		delete_prev = message[2].decode()
 		prev = new_prev_address
+
+		new_list_hashes = list()
+
+		for filename in list_hashes:
+			if filename != "list_hashes" and int(filename) < int(delete_prev):
+				os.remove(folder + "/" + filename)
+			else:
+				new_list_hashes.append(filename)
+
+		list_hashes = new_list_hashes
 
 		socket.send_multipart(encode(["El nuevo prev de {} es {}".format(address, prev)]))
 
@@ -143,6 +154,7 @@ while True:
 		file = open(folder + "/" + filename, 'rb')
 		content = file.read()
 		socket.send_multipart([content])
+		file.close()
 
 	elif action == 'list':
 

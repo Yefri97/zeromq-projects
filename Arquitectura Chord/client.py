@@ -6,7 +6,14 @@ import os
 import hashlib
 
 ps = 10 * 1024 * 1024
-max_number = 10000000
+max_number = 1000000000
+
+def size(file):
+	sizeFile = os.stat(file).st_size
+	return sizeFile
+
+def porc(x, y):
+	return (x / y) * 100
 
 def encode(l):
 	return [x.encode() for x in l]
@@ -66,15 +73,18 @@ if action == 'upload':
 
 	file2upload = sys.argv[3]
 	file_txt = new_txt(file2upload)
-	print("Totient generado en " + file_txt)
-
+	tamaño = size(file2upload)
+	toUpload = 0
 	file = open(file2upload, 'rb')
-	
+	porcentaje = 0
 	while True:
-
+		toUpload = toUpload + ps
+		porcentaje = porcentaje + porc(ps,tamaño)
 		chunk = file.read(ps)
-
+		if toUpload < tamaño:
+			print("Completado: " + str(porcentaje)  + "% de 100%")
 		if not chunk:
+			print("Completado: 100% de 100%")
 			break
 
 		# Obtiene al responsable
@@ -87,6 +97,7 @@ if action == 'upload':
 		socket.connect("tcp://" + responsable[1])
 		socket.send_multipart([b'upload', str(reduce(chunk_hash)).encode(), chunk])
 
+	print("Archivo txt generado correctamente en " + file_txt)
 	file.close()
 
 elif action == 'download':
@@ -97,14 +108,19 @@ elif action == 'download':
 	print("Iniciando descarga...")
 	file_txt = open(nametxt, "r")
 
-	filename = file_txt.readline().strip()
-	
-	file = open("downloads/" + filename, 'wb')
 
+	filename = file_txt.readline().strip()
+	tamaño = size(filename)
+	file = open("downloads/" + filename, 'wb')
+	toDownload = 0
+	porcentaje = 0
+	print("Completado: " + str(porcentaje)  + "% de 100%")
 	chunk_hash = file_txt.readline().strip()
 	while chunk_hash:
 		responsable = get_responsable(int(chunk_hash), ring_address)
-
+		toDownload = toDownload + ps
+		porcentaje = porcentaje + porc(ps, tamaño)
+		print("Descargando : " + str(min(porcentaje, 100.0)) + "% de 100%")
 		context = zmq.Context()
 		socket = context.socket(zmq.REQ)
 		socket.connect("tcp://" + responsable[1])
@@ -114,6 +130,7 @@ elif action == 'download':
 		file.write(content[0])
 		chunk_hash = file_txt.readline().strip()
 
+	print("Descargado correctamente : " + nametxt)
 	file_txt.close()
 	file.close()
 
