@@ -1,24 +1,50 @@
 import zmq
 
-context = zmq.Context()
+class SinkKMean:
 
-fan = context.socket(zmq.PULL)
-fan.bind("tcp://*:5558")
+	def __init__(self):
 
-fan_push = context.socket(zmq.PUSH)
-fan_push.connect("tcp://localhost:5556")
+		context = zmq.Context()
 
-num_iteraciones = 0
-while True:
+		self.fan = context.socket(zmq.PULL)
+		self.fan.bind("tcp://*:5558")
 
-	num_iteraciones += 1
+		self.fan_push = context.socket(zmq.PUSH)
+		self.fan_push.connect("tcp://localhost:5556")
 
-	n_tasks = fan.recv_json()['n_tasks']
-	# print(num_iteraciones, n_tasks, flush = True)
 
-	vectores = []
-	for task in range(n_tasks):
-		response = fan.recv_json()['response']
-		vectores = vectores + response
+	def do(self):
+		# Process tasks forever
+		while True:
 
-	fan_push.send_json({ 'response': vectores })
+			s = self.fan.recv_json()
+			n_tasks = s['n_tasks']
+			n_clusters = s['n_clusters']
+
+			counter = [0 for _ in range(n_clusters)]
+			centroids = [{} for _ in range(n_clusters)]
+			for task in range(n_tasks):
+				response = self.fan.recv_json()['response']
+				for i, cluster in enumerate(response):
+					for dim in cluster:
+						if dim == 'counter':
+							counter[i] += cluster[dim]
+							continue
+						if dim not in centroids[i]:
+							centroids[i][dim] = 0.0
+						centroids[i][dim] += cluster[dim]
+
+			for i, centroid in enumerate(centroids):
+				for dim in centroid:
+					centroid[dim] /= counter[i]
+
+			self.fan_push.send_json({ 'response': centroids })
+
+
+def main():
+	sink = SinkKMean()
+	print("Sink Listo...", flush = True)
+	sink.do()
+
+if __name__ == '__main__':
+	main()
