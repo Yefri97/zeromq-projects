@@ -9,7 +9,8 @@ MAX_NUMBER = 10000
 COLORS = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta']
 
 def generar_vector_aleatorio(dimension):
-	return [random.randint(0, MAX_NUMBER) for _ in range(dimension)]
+	coor = random.randint(0, 1)
+	return {str(i): random.randint(0, MAX_NUMBER) for i in range(dimension)}
 
 
 def generar_clusters_aleatorios(num_clusters, dim_vectores):
@@ -17,10 +18,10 @@ def generar_clusters_aleatorios(num_clusters, dim_vectores):
 
 
 def centroide(vectores, dim):
-	response = [0 for _ in range(dim)]
-	for i in range(dim):
-		for vector in vectores:
-			response[i] += vector[i] * 1.0 / len(vectores)
+	response = {str(i): 0 for i in range(dim)}
+	for vector in vectores:
+		for key in vector:
+			response[key] += vector[key] * 1.0 / len(vectores)
 	return response
 
 
@@ -49,10 +50,18 @@ def find_near(vectores, clusters):
 
 
 def distancia(vector1, vector2):
-	dist = 0.0
-	for (x1, x2) in zip(vector1, vector2):
-		dist += (x1 - x2) * (x1 - x2)
-	return math.sqrt(dist)
+	dist = {}
+	for key in vector1:
+		dist[key] = vector1[key]
+	for key in vector2:
+		if key in vector1:
+			dist[key] = vector2[key] - vector1[key]
+		else:
+			dist[key] = vector2[key]
+	response = 0.0
+	for key in dist:
+		response += dist[key] * dist[key]
+	return response
 
 
 def kmean(vectores, dim_vectores, num_clusters):
@@ -61,7 +70,7 @@ def kmean(vectores, dim_vectores, num_clusters):
 	clusters = generar_clusters_aleatorios(num_clusters, dim_vectores)
 
 	num_iteraciones = 0
-	while True:
+	while num_iteraciones < 500:
 		num_iteraciones += 1
 
 		# Step 1
@@ -75,12 +84,11 @@ def kmean(vectores, dim_vectores, num_clusters):
 
 		# print([distancia(c1, c2) for (c1, c2) in zip(clusters, new_clusters)], flush = True)
 
-		are_similar = 1
+		diff = 0.0
 		for (c1, c2) in zip(clusters, new_clusters):
-			if math.fabs(distancia(c1, c2)) > EPS:
-				are_similar = 0
+			diff += math.sqrt(distancia(c1, c2))
 
-		if are_similar:
+		if diff < EPS:
 			break
 
 		clusters = new_clusters
@@ -89,13 +97,13 @@ def kmean(vectores, dim_vectores, num_clusters):
 	print(num_iteraciones)
 
 	# Plot the results
-	"""for idx in range(num_clusters):
-		plt.scatter(clusters[idx][0], clusters[idx][1], s = 300, c = COLORS[idx])
+	for idx in range(num_clusters):
+		plt.scatter(clusters[idx].get('0', 0), clusters[idx].get('1', 0), s = 300, c = COLORS[idx])
 
 	for vector in vectores:
-		plt.scatter(vector[0][0], vector[0][1], c = COLORS[vector[1]])
+		plt.scatter(vector[0].get('0', 0), vector[0].get('1', 0), c = COLORS[vector[1]])
 
-	plt.show()"""
+	plt.show()
 
 	return clusters
 
@@ -120,7 +128,7 @@ print("Iniciando Clasificación", flush = True)
 
 
 random.seed()
-data = [generar_vector_aleatorio(2) for _ in range(160000)]
+data = [generar_vector_aleatorio(2) for _ in range(1600)]
 
 # Tiempo Inicial
 time_start = time.time()

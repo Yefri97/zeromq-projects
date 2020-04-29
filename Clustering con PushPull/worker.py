@@ -2,10 +2,18 @@ import zmq
 import math
 
 def distancia(vector1, vector2):
-	dist = 0.0
-	for (x1, x2) in zip(vector1, vector2):
-		dist += (x1 - x2) * (x1 - x2)
-	return math.sqrt(dist)
+	dist = {}
+	for key in vector1:
+		dist[key] = vector1[key]
+	for key in vector2:
+		if key in vector1:
+			dist[key] = vector2[key] - vector1[key]
+		else:
+			dist[key] = vector2[key]
+	response = 0.0
+	for key in dist:
+		response += dist[key] * dist[key]
+	return response
 
 context = zmq.Context()
 
