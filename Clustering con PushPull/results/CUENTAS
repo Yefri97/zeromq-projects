@@ -1,0 +1,61 @@
+CUENTAS
+
+ARCHIVO               LINEAS
+--------------------------------------
+
+combined_data_1.txt  =  		24058263
+combined_data_2.txt  =  		26982302
+combined_data_3.txt  =  		22605786
+combined_data_4.txt  =  		26851926
+
+TOTAL 							 =   100.498.277 ---> aprox 10**8
+TOTAL PELICULAS 		 =        17.770
+TOTAL USUARIOS			 =       480.189
+TAMAÑO MATRIZ				 = 8.532.958.530
+
+
+N = 10000, K = 20, D = 2
+
+SERIAL
+A = 50
+Tiempo:  24.499848127365112
+
+PARALELO
+A = 83, W = 1
+Tiempo:  234.3606734275818
+
+A = 57, W = 3
+Tiempo:  160.28643441200256
+
+A = 37, W = 4
+Tiempo:  158.68749022483826
+
+
+N = 160000, K = 5, D = 2
+
+SERIAL
+A = 64
+Tiempo:  165.18249583244324
+
+PARALELO
+A = 31, W = 4
+Tiempo:  109.4461977481842
+
+PARALELO
+A = 41, W = 4
+Tiempo:  131.94428157806396
+
+
+Version 2
+
+N = 160000, K = 5, D = 2
+A = 42, W = 2
+Tiempo:  60.421895265579224
+A = 35, W = 4
+Tiempo:  41.7697970867157
+
+
+BUCKET 100 PELICULAS
+USUARIOS = 191.668
+
+10^8 operaciones aprox 1 min

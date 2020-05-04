@@ -15,23 +15,21 @@ class WorkerKMean:
 		self.sink = context.socket(zmq.PUSH)
 		self.sink.connect("tcp://localhost:5558")
 
-		with open('data/data.txt', 'r') as json_file:
+		with open('data/ranks.txt', 'r') as json_file:
 			self.vectors = json.load(json_file)
 
 
-	def distance(self, vector1, vector2):
-		dist = {}
-		for key in vector1:
-			dist[key] = vector1[key]
-		for key in vector2:
-			if key in vector1:
-				dist[key] = vector2[key] - vector1[key]
+	def distance_to_cluster(self, vector, id_cluster):
+		dist = self.values_clusters[id_cluster]
+		for key in vector:
+			if key in self.clusters[id_cluster]:
+				dist -= self.clusters[id_cluster][key] ** 2
+				dist += (vector[key] - self.clusters[id_cluster][key]) ** 2
 			else:
-				dist[key] = vector2[key]
-		response = 0.0
-		for key in dist:
-			response += dist[key] * dist[key]
-		return response
+				dist += vector[key] ** 2
+		if dist < 0:
+			dist = 0.0
+		return dist
 
 
 	def do(self):
@@ -41,17 +39,19 @@ class WorkerKMean:
 
 			# Extraigo el vector y los clusters del mensaje
 			interval = s['interval']
-			clusters = s['clusters']
+			self.clusters = s['clusters']
+			self.values_clusters = s['values_clusters']
 
 			# Do the work: Encontrar el cluster mas cercano
-			response = [{ 'counter': 0 } for _ in clusters]
+			response = [{ 'counter': 0 } for _ in self.clusters]
 			for i in range(interval[0], interval[1] + 1):
-
-				label = 0
 				vector = self.vectors[i]
-				for i, cluster in enumerate(clusters):
-					if self.distance(vector, cluster) < self.distance(vector, clusters[label]):
-						label = i
+				label, best = (-1, -1)
+				for j in range(len(self.clusters)):
+					dist = self.distance_to_cluster(vector, j)
+					if label == -1 or dist < best:
+						label = j
+						best = dist
 
 				for dim in vector:
 					if dim not in response[label]:

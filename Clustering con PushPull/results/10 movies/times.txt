@@ -1,0 +1,72 @@
+K =  2
+Numero de iteraciones 4
+Tiempo de Entrenamiento:  0.20644474029541016
+Inercia:  281.8506526500169
+K =  3
+Numero de iteraciones 8
+Tiempo de Entrenamiento:  0.6009535789489746
+Inercia:  248.77993531403985
+K =  4
+Numero de iteraciones 8
+Tiempo de Entrenamiento:  0.7864248752593994
+Inercia:  233.25314104768833
+K =  5
+Numero de iteraciones 12
+Tiempo de Entrenamiento:  1.3394184112548828
+Inercia:  213.22270617754918
+K =  6
+Numero de iteraciones 12
+Tiempo de Entrenamiento:  1.5611934661865234
+Inercia:  157.26536667207748
+K =  7
+Numero de iteraciones 11
+Tiempo de Entrenamiento:  1.560018539428711
+Inercia:  149.91402684953107
+K =  8
+Numero de iteraciones 12
+Tiempo de Entrenamiento:  1.8825035095214844
+Inercia:  144.3208632066905
+K =  9
+Numero de iteraciones 12
+Tiempo de Entrenamiento:  2.1933796405792236
+Inercia:  143.32714984304164
+K =  10
+Numero de iteraciones 15
+Tiempo de Entrenamiento:  2.8254172801971436
+Inercia:  141.91663768840758
+K =  11
+Numero de iteraciones 15
+Tiempo de Entrenamiento:  2.957550287246704
+Inercia:  139.86542440716318
+K =  12
+Numero de iteraciones 15
+Tiempo de Entrenamiento:  3.4166831970214844
+Inercia:  139.38607012106274
+K =  13
+Numero de iteraciones 16
+Tiempo de Entrenamiento:  3.837461233139038
+Inercia:  137.78678998093
+K =  14
+Numero de iteraciones 16
+Tiempo de Entrenamiento:  4.009358882904053
+Inercia:  137.6379036699803
+K =  15
+Numero de iteraciones 20
+Tiempo de Entrenamiento:  5.459361791610718
+Inercia:  130.0590268072916
+K =  16
+Numero de iteraciones 20
+Tiempo de Entrenamiento:  5.481899976730347
+Inercia:  129.99629656542697
+K =  17
+Numero de iteraciones 20
+Tiempo de Entrenamiento:  6.150394678115845
+Inercia:  129.99629656542697
+K =  18
+Numero de iteraciones 20
+Tiempo de Entrenamiento:  5.911825180053711
+Inercia:  129.99629656542697
+K =  19
+Numero de iteraciones 20
+Tiempo de Entrenamiento:  6.259259223937988
+Inercia:  129.99629656542697

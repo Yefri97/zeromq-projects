@@ -11,13 +11,12 @@ COLORS = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta']
 
 
 def generar_vector_aleatorio(dimension):
-	coor = random.randint(0, 1)
 	return {str(i): random.randint(0, MAX_NUMBER) for i in range(dimension)}
 
 
 class FanKMeans:
 
-	def __init__(self, max_iterations = 50, tolerance = 0.00001):
+	def __init__(self, max_iterations = 50, tolerance = 0.0000001):
 
 		self.max_iterations = max_iterations
 		self.tolerance = tolerance
@@ -35,6 +34,19 @@ class FanKMeans:
 
 		self.sink_pull = context.socket(zmq.PULL)
 		self.sink_pull.bind("tcp://*:5556")
+
+
+	def distance_to_cluster(self, vector, id_cluster):
+		dist = self.values_clusters[id_cluster]
+		for key in vector:
+			if key in self.clusters[id_cluster]:
+				dist -= self.clusters[id_cluster][key] ** 2
+				dist += (vector[key] - self.clusters[id_cluster][key]) ** 2
+			else:
+				dist += vector[key] ** 2
+		if dist < 0:
+			dist = 0.0
+		return dist
 
 
 	def distance(self, vector1, vector2):
@@ -73,10 +85,18 @@ class FanKMeans:
 				'n_clusters': num_clusters
 			})
 
+			self.values_clusters = []
+			for cluster in self.clusters:
+				value = 0
+				for key in cluster:
+					value += cluster[key] ** 2
+				self.values_clusters.append(value)
+
 			for task in tasks:
 				self.workers.send_json({
 					'interval': task,
 					'clusters': self.clusters,
+					'values_clusters': self.values_clusters,
 				})
 			
 			new_clusters = self.sink_pull.recv_json()['response']
@@ -94,45 +114,62 @@ class FanKMeans:
 
 
 	def predict(self, vector):
-		label = 0
-		for i, cluster in enumerate(self.clusters):
-			if self.distance(vector, cluster) < self.distance(vector, self.clusters[label]):
+		label, best = (-1, -1)
+		for i in range(len(self.clusters)):
+			dist = self.distance_to_cluster(vector, i)
+			if label == -1 or dist < best:
 				label = i
-		return label
+				best = dist
+		return (label, best)
 
 
-def main():
+def main(debug = 1):
 
-	num_vectors = 160000
-	num_dimensions = 2
-	num_clusters = 5
-
-	random.seed()
-	data = [generar_vector_aleatorio(num_dimensions) for _ in range(num_vectors)]
-
-	with open('data/data.txt', 'w') as f:
-		f.write(json.dumps(data))
-
+	if debug:
+		num_vectors = 100
+		num_dimensions = 2
+		max_num_clusters = 3
+		# random.seed()
+		data = [generar_vector_aleatorio(num_dimensions) for _ in range(num_vectors)]
+		with open('data/ranks.txt', 'w') as f:
+			f.write(json.dumps(data))
+	else:
+		num_vectors = 191668
+		num_dimensions = 100
+		max_num_clusters = 20
+		with open('data/ranks.txt', 'r') as json_file:
+			data = json.load(json_file)
+	
 	kmeans = FanKMeans()
 	print("Presione Enter cuando los trabajadores esten listos...", flush = True)
 	_ = input()
-	print("Iniciando Clasificación", flush = True)
+	print("Iniciando Clasificacion", flush = True)
 
-	time_start = time.time()
-	kmeans.train(num_vectors, num_dimensions, num_clusters)
-	time_final = time.time()
-	print("Tiempo de Entrenamiento: ", time_final - time_start)
+	for num_clusters in range(2, max_num_clusters):
+		print("K = ", num_clusters)
+		time_start = time.time()
+		kmeans.train(num_vectors, num_dimensions, num_clusters)
+		time_final = time.time()
+		print("Tiempo de Entrenamiento: ", time_final - time_start)
 
-	# Plot the results
-	"""for i, cluster in enumerate(kmeans.clusters):
-		plt.scatter(cluster.get('0', 0), cluster.get('1', 0), s = 300, c = COLORS[i])
+		inertia = 0.0
+		for vector in data:
+			(label, dist) = kmeans.predict(vector)
+			inertia += dist
+		print("Inercia: ", math.sqrt(inertia), flush = True)
 
-	for vector in data:
-		label = kmeans.predict(vector)
-		plt.scatter(vector.get('0', 0), vector.get('1', 0), c = COLORS[label])
+		if debug:
+			for i, cluster in enumerate(kmeans.clusters):
+				plt.scatter(cluster.get('0', 0), cluster.get('1', 0), s = 300, c = COLORS[i])
 
-	plt.show()"""
+			for vector in data:
+				label = kmeans.predict(vector)[0]
+				plt.scatter(vector.get('0', 0), vector.get('1', 0), c = COLORS[label])
+		else:
+			for i, cluster in enumerate(kmeans.clusters):
+				plt.scatter(num_clusters, inertia, c = COLORS[0])
 
+	plt.show()
 
 if __name__ == "__main__":
-	main()
+	main(debug = 0)

@@ -1,0 +1,73 @@
+Iniciando Clasificacion
+K =  2
+Numero de iteraciones 7
+Tiempo de Entrenamiento:  5.98685884475708
+Inercia:  1745.7021884109586
+K =  3
+Numero de iteraciones 11
+Tiempo de Entrenamiento:  11.960061073303223
+Inercia:  1644.269019682249
+K =  4
+Numero de iteraciones 17
+Tiempo de Entrenamiento:  23.55167579650879
+Inercia:  1622.9789708078663
+K =  5
+Numero de iteraciones 21
+Tiempo de Entrenamiento:  35.80319023132324
+Inercia:  1615.7697272440785
+K =  6
+Numero de iteraciones 34
+Tiempo de Entrenamiento:  67.60883617401123
+Inercia:  1574.804931441304
+K =  7
+Numero de iteraciones 37
+Tiempo de Entrenamiento:  82.90507674217224
+Inercia:  1545.165769045474
+K =  8
+Numero de iteraciones 23
+Tiempo de Entrenamiento:  57.829124450683594
+Inercia:  1542.3599701719058
+K =  9
+Numero de iteraciones 42
+Tiempo de Entrenamiento:  118.16714382171631
+Inercia:  1531.8215137911848
+K =  10
+Numero de iteraciones 30
+Tiempo de Entrenamiento:  100.15700578689575
+Inercia:  1504.8843688815678
+K =  11
+Numero de iteraciones 28
+Tiempo de Entrenamiento:  98.54265546798706
+Inercia:  1503.1680684898681
+K =  12
+Numero de iteraciones 28
+Tiempo de Entrenamiento:  99.19101214408875
+Inercia:  1488.8901788825601
+K =  13
+Numero de iteraciones 38
+Tiempo de Entrenamiento:  149.74388575553894
+Inercia:  1453.0239145401672
+K =  14
+Numero de iteraciones 40
+Tiempo de Entrenamiento:  161.7622470855713
+Inercia:  1411.545741043915
+K =  15
+Numero de iteraciones 47
+Tiempo de Entrenamiento:  207.43452548980713
+Inercia:  1403.9454438623632
+K =  16
+Numero de iteraciones 38
+Tiempo de Entrenamiento:  175.984708070755
+Inercia:  1396.7414633440649
+K =  17
+Numero de iteraciones 35
+Tiempo de Entrenamiento:  175.0193920135498
+Inercia:  1380.4858615877197
+K =  18
+Numero de iteraciones 38
+Tiempo de Entrenamiento:  194.0636715888977
+Inercia:  1373.3853391869757
+K =  19
+Numero de iteraciones 39
+Tiempo de Entrenamiento:  229.16116213798523
+Inercia:  1361.459904794311
