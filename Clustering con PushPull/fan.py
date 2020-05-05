@@ -16,7 +16,7 @@ def generar_vector_aleatorio(dimension):
 
 class FanKMeans:
 
-	def __init__(self, max_iterations = 50, tolerance = 0.0000001):
+	def __init__(self, max_iterations = 60, tolerance = 0.00001):
 
 		self.max_iterations = max_iterations
 		self.tolerance = tolerance
@@ -70,6 +70,7 @@ class FanKMeans:
 		
 		num_iterations = 0
 		while num_iterations < self.max_iterations:
+			time_start = time.time()
 			num_iterations += 1
 
 			sqrt = math.floor(math.sqrt(num_vectors))
@@ -110,6 +111,9 @@ class FanKMeans:
 
 			self.clusters = new_clusters
 
+			time_final = time.time()
+			print("Iteracion:", num_iterations, ", Tiempo:", time_final - time_start, flush = True)
+
 		print("Numero de iteraciones", num_iterations)
 
 
@@ -134,9 +138,9 @@ def main(debug = 1):
 		with open('data/ranks.txt', 'w') as f:
 			f.write(json.dumps(data))
 	else:
-		num_vectors = 191668
-		num_dimensions = 100
-		max_num_clusters = 20
+		num_vectors = 470758
+		num_dimensions = 4499
+		max_num_clusters = 2
 		with open('data/ranks.txt', 'r') as json_file:
 			data = json.load(json_file)
 	
@@ -145,7 +149,7 @@ def main(debug = 1):
 	_ = input()
 	print("Iniciando Clasificacion", flush = True)
 
-	for num_clusters in range(2, max_num_clusters):
+	for num_clusters in range(max_num_clusters, max_num_clusters+1):
 		print("K = ", num_clusters)
 		time_start = time.time()
 		kmeans.train(num_vectors, num_dimensions, num_clusters)
@@ -165,11 +169,11 @@ def main(debug = 1):
 			for vector in data:
 				label = kmeans.predict(vector)[0]
 				plt.scatter(vector.get('0', 0), vector.get('1', 0), c = COLORS[label])
-		else:
+		"""else:
 			for i, cluster in enumerate(kmeans.clusters):
-				plt.scatter(num_clusters, inertia, c = COLORS[0])
+				plt.scatter(num_clusters, inertia, c = COLORS[0])"""
 
-	plt.show()
+	#plt.show()
 
 if __name__ == "__main__":
 	main(debug = 0)

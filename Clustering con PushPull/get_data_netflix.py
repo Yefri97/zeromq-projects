@@ -14,7 +14,7 @@ def read_netflix_data(limit):
 			for line in f.readlines():
 				if line[-2] == ':':
 					movie += 1
-					if movie > limit:
+					if movie == limit:
 						return data
 				else:
 					(user, rank, date) = line.split(',')
@@ -39,7 +39,9 @@ def save_netflix_data(data):
 	with open('data/users.txt', 'w') as f:
 		f.write(json.dumps(users))
 
+	print("Numero de Vectores", len(users))
+
 time_start = time.time()
-save_netflix_data(read_netflix_data(100))
+save_netflix_data(read_netflix_data(4500))
 time_final = time.time()
 print("Tiempo: ", time_final - time_start)
